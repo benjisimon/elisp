@@ -164,5 +164,11 @@ This works on the current region."
     (if fn
         (browse-url (format "https://php.net/%s" fn)))))
 
-
+(defun write-compile-command-dir-locals (command)
+  "Write out a .dir-locals.el with the sane compile command"
+  (interactive "sCompile command: ")
+  (with-temp-file (format "%s.dir-locals.el" default-directory)
+    (insert (format "%s"
+                    `((nil . ((compile-command . ,command))))))))
+    
 (provide 'bs-fns)
