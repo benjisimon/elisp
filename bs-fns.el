@@ -9,6 +9,11 @@
   (insert (format-time-string "%Y/%m/%d %H:%M:%S"
                               (current-time))))
 
+(defun insert-random-token ()
+  "Insert a random token into the current buffer."
+  (interactive)
+  (insert (md5 (format "%s" (random)))))
+
 (defun cleanup-iso-latin-chars ()
   "Cleanup a buffer full of iso latin characters into plain ASCII."
   (interactive)
