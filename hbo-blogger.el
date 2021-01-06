@@ -89,7 +89,7 @@
     (goto-char (point-min))
     (web-mode)
     (write-file (format "%s/%s" hbo-blogger-posts-dir (buffer-name)))
-    (add-hook 'after-save-hook 'hbo-blogger-save-buffer)
+    (add-hook 'after-save-hook 'hbo-blogger-save-buffer 0 t)
     (switch-to-buffer b)))
 
 (defun hbo-blogger-edit-latest-draft-post (blog-url)
