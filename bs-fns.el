@@ -173,7 +173,7 @@ This works on the current region."
   "Write out a .dir-locals.el with the sane compile command"
   (interactive "sCompile command: ")
   (with-temp-file (format "%s.dir-locals.el" default-directory)
-    (insert (format "%s"
+    (insert (format "%S"
                     `((nil . ((compile-command . ,command))))))))
     
 (provide 'bs-fns)
