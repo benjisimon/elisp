@@ -128,14 +128,23 @@ This works on the current region."
                             ""
                             str))
 
+(defun multi-replace-regexp-in-string (todo string)
+  "Perform repace-regexp-in-string multiple times"
+  (let ((result string))
+    (dolist (elt todo result)
+      (setq result (replace-regexp-in-string (car elt) (cdr elt) result)))))
+
 (defun code-review-region (beg end)
   (interactive "r")
   (let* ((text (chomp (buffer-substring-no-properties beg end)))
          (line-number (line-number-at-pos))
          (file (buffer-file-name))
-         (path (replace-regexp-in-string "^.*branches/" ""
-                                         (replace-regexp-in-string 
-                                          "^.*trunk/" "" file))))
+         (path (multi-replace-regexp-in-string
+                '(("^.*branches/" . "")
+                  ("^.*trunk/" . "")
+                  ("^.*development/" . "")
+                  ("^.*production/" . "")
+                  ("^.*src/" . "")) file)))
     (with-temp-buffer
       (insert text)
       (goto-char (point-min))
