@@ -88,6 +88,7 @@
     (insert (gethash "content" post))
     (goto-char (point-min))
     (web-mode)
+    (local-set-key (kbd "C-x t p") 'hbo-blogger-preview-buffer)
     (write-file (format "%s/%s" hbo-blogger-posts-dir (buffer-name)))
     (add-hook 'after-save-hook 'hbo-blogger-save-buffer 0 t)
     (switch-to-buffer b)))
@@ -113,6 +114,13 @@
       ((blog-id) (elt parts 0))
       ((post-id) (elt parts 1)))))
                                   
+
+(defun hbo-blogger-preview-buffer ()
+  (interactive)
+  (let ((blog-id (hbo-blogger-buffer-name-to 'blog-id))
+        (post-id (hbo-blogger-buffer-name-to 'post-id)))
+    (browse-url (format "https://draft.blogger.com/blog/post/preview/%s/%s"
+                        blog-id post-id))))
 
 (defun hbo-blogger-save-buffer ()
   (interactive)
