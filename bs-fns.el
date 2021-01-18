@@ -184,5 +184,21 @@ This works on the current region."
   (with-temp-file (format "%s.dir-locals.el" default-directory)
     (insert (format "%S"
                     `((nil . ((compile-command . ,command))))))))
-    
+
+
+(defun bs-ibuffer-filter-groups ()
+  (let* ((projects (seq-filter (lambda (file)
+                                 (and (not (equal "src" file))
+                                      (not (equal (substring file 0 1) "."))))
+                               (directory-files "~/dt/i2x")))
+         (project-rules  (seq-map (lambda (f)
+                                    `(,f (and (directory . ,f)
+                                              (directory . "i2x"))))
+                                  projects)))
+    `(("main"
+       ("emacs" (or (directory . ".emacs.d")
+                    (mode . "Emacs-Lisp")))
+       ("tools" (and (directory . "src") (directory . "trunk") (directory . "tools")))
+       ,@project-rules))))
+
 (provide 'bs-fns)
