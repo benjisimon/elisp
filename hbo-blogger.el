@@ -42,7 +42,7 @@
 
 (defun hbo-blogger-put (url content)
   "invoke a PUT against blogger's API"
-  (hbo-blogger-invoke "PUT" url  '(("Content-Type" . "application/json")) (json-encode content)))
+  (hbo-blogger-invoke "PUT" url  '(("Content-Type" . "application/json")) (encode-coding-string (json-encode content) 'utf-8)))
 
 (defun hbo-blogger-get-post (blog-id post-id)
   "Retrieve a post object from blogger."
