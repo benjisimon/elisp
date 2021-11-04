@@ -201,4 +201,16 @@ This works on the current region."
        ("tools" (and (directory . "src") (directory . "trunk") (directory . "tools")))
        ,@project-rules))))
 
+
+(defun forth-refresh ()
+  "Launch a fresh instance of forth using the current buffer."
+  (interactive)
+  (when (process-live-p (get-buffer-process forth-process-buffer))
+    (delete-process (get-buffer-process forth-process-buffer))
+    (kill-buffer forth-process-buffer))
+  (save-window-excursion
+    (run-forth forth-program-name))
+  (forth-load-file buffer-file-name)
+  (forth-switch-to-interactive t))
+
 (provide 'bs-fns)
