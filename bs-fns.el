@@ -213,4 +213,13 @@ This works on the current region."
   (forth-load-file buffer-file-name)
   (forth-switch-to-interactive t))
 
+(defun browse-project-resource-url (resource)
+    "Go to a standard URL based on the project"
+  (interactive
+   (list (completing-read "Resource? "
+                          '("ch" "bugs" "d"))))
+  (let* ((dir default-directory)
+         (client (replace-regexp-in-string ".*/dt/i2x/\\(.*?\\)/.*" "\\1" dir)))
+    (browse-url (format "http://u.i2x.us/%s-%s" resource client))))
+
 (provide 'bs-fns)
