@@ -219,7 +219,7 @@ This works on the current region."
    (list (completing-read "Resource? "
                           '("ch" "bugs" "d"))))
   (let* ((dir default-directory)
-         (client (replace-regexp-in-string ".*/dt/i2x/\\(.*?\\)/.*" "\\1" dir)))
+         (client (replace-regexp-in-string ".*/i2x/\\([^/]*\\)/.*" "\\1" dir)))
     (browse-url (format "http://u.i2x.us/%s-%s" resource client))))
 
 (defun ediff-copy-both-to-C ()
