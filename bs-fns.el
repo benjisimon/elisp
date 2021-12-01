@@ -231,4 +231,17 @@ This works on the current region."
 (defun add-d-to-ediff-mode-map () (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
 (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 
+
+(defun bs-find-snippet ()
+  "Find the snippet under the current cursor."
+  (interactive)
+  (let ((found (thing-at-point-looking-at "snippet *[(] *['\"]\\(.*?\\)['\"]")))
+    (if found
+        (let ((path (buffer-substring (match-beginning 1) (match-end 1)))
+              (root (locate-dominating-file default-directory "snippets")))
+          (xref-push-marker-stack)
+          (find-file (concat root "snippets/" path ".php")))
+      (error "Not on a snippet expression."))))
+        
+
 (provide 'bs-fns)
