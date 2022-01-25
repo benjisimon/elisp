@@ -88,6 +88,8 @@
     (insert (gethash "content" post))
     (goto-char (point-min))
     (web-mode)
+    (auto-fill-mode)
+    (flyspell-mode)
     (local-set-key (kbd "C-x t p") 'hbo-blogger-preview-buffer)
     (write-file (format "%s/%s" hbo-blogger-posts-dir (buffer-name)))
     (add-hook 'after-save-hook 'hbo-blogger-save-buffer 0 t)
