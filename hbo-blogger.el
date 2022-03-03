@@ -25,6 +25,12 @@
        hbo-blogger-client-id
        hbo-blogger-client-secret))
 
+(defun hbo-blogger-verify-response (response)
+  "Check a response to make sure it's valid"
+  (let ((e (gethash "error" response)))
+    (if e
+        (error (gethash "message" e))
+      response)))
 
 (defun hbo-blogger-invoke (method url headers data)
   "General purpose blogger API request"
@@ -34,7 +40,7 @@
           method data headers)))
     (with-current-buffer buffer
       (goto-char url-http-end-of-headers)
-      (json-parse-buffer))))
+      (hbo-blogger-verify-response (json-parse-buffer)))))
 
 (defun hbo-blogger-get (url)
   "internal function to make http GET's to blogger easier"
