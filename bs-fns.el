@@ -244,4 +244,15 @@ This works on the current region."
       (error "Not on a snippet expression."))))
 
 
+
+;; https://www.reddit.com/r/emacs/comments/ty5i2l/emacs_28_29_watching_eln_files_and_causing_too/
+;; https://github.com/emacs-mirror/emacs/blob/master/lisp/filenotify.el
+(defun file-notify-rm-all-watches ()
+  "Remove all existing file notification watches from Emacs."
+  (interactive)
+  (maphash
+   (lambda (key _value)
+     (file-notify-rm-watch key))
+   file-notify-descriptors))
+
 (provide 'bs-fns)
