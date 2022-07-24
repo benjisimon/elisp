@@ -255,4 +255,47 @@ This works on the current region."
      (file-notify-rm-watch key))
    file-notify-descriptors))
 
+
+(defun current-vc-branch ()
+  "Guess the current branch or return nil if aren't on one"
+  (let ((d default-directory))
+    (cond
+     ((locate-dominating-file d ".git")
+      (vc-git--symbolic-ref default-directory))
+     ((locate-dominating-file d ".svn")
+      (let ((url (svn-current-url)))
+        (cond ((string-match "/trunk\\(/\\|$\\)" url) "trunk")
+              ((string-match "/branches/\\(.*?\\)\\(/\\|$\\)" url)
+               (match-string 1 url))
+              (t nil))))
+     (t nil))))
+
+(defun current-customer ()
+  "Guess the customer we are looking at by looking at our path"
+  (let ((d default-directory))
+    (if (string-match "dt/i2x/\\(.*?\\)/" d)
+        (match-string 1 d)
+      nil)))
+
+
+(defun project-notes-find-file-today ()
+  (interactive)
+  "Quickly open up a notes file or create one for today."
+  (let* ((base "~/dt/i2x/project-notes/src/main")
+         (timestamp (format-time-string "%Y-%m-%d"))
+         (branch (current-vc-branch))
+         (customer (current-customer))
+         (dir (cond
+               ((and branch customer)
+                (format "%s/%s/%s" base customer branch))
+               (customer
+                (format "%s/%s/misc" base customer))
+               (t (format "%s/internal/misc" base)))))
+    (unless (file-accessible-directory-p dir)
+      (mkdir dir t))
+    (find-file (format "%s/%s.md" dir timestamp))))
+    
+         
+                
+    
 (provide 'bs-fns)
