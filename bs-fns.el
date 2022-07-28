@@ -258,6 +258,7 @@ This works on the current region."
 
 (defun current-vc-branch ()
   "Guess the current branch or return nil if aren't on one"
+  (require 'dsvn)
   (let ((d default-directory))
     (cond
      ((locate-dominating-file d ".git")
