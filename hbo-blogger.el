@@ -143,6 +143,7 @@
                     (blog    . ((id . ,blog-id)))
                     (content . ,content)
                     (url     . ,(gethash "url" post))
+                    (published . ,(gethash "published" post))
                     (author  . ((id . ,(gethash "id" (gethash "author" post)))))
                     (labels  . ,(gethash "labels" post))
                     (title   . ,(gethash "title" post)))))
