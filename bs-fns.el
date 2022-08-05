@@ -297,6 +297,12 @@ This works on the current region."
     (find-file (format "%s/%s.md" dir timestamp))))
     
          
-                
+
+(defun svnassist-current-release ()
+  "Switch the current repo to current release"
+  (interactive)
+  (let ((root (locate-dominating-file default-directory ".svn")))
+    (let ((default-directory root))
+      (shell-command "svnassist current-release"))))
     
 (provide 'bs-fns)
