@@ -298,11 +298,11 @@ This works on the current region."
     
          
 
-(defun svnassist-current-release ()
+(defun svnassist-switch-release ()
   "Switch the current repo to current release"
   (interactive)
   (let ((root (locate-dominating-file default-directory ".svn")))
     (let ((default-directory root))
-      (shell-command "svnassist current-release"))))
+      (shell-command "svnassist switch-release"))))
     
 (provide 'bs-fns)
