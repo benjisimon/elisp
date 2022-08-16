@@ -305,4 +305,10 @@ This works on the current region."
     (let ((default-directory root))
       (shell-command "svnassist switch-release"))))
 
+(defun bs-relative-path-to (current target)
+  "Find a relative path to `target` starting from `current`"
+  (let ((root (locate-dominating-file current target)))
+    (file-relative-name (concat root "/" target) current)))
+
+
 (provide 'bs-fns)
