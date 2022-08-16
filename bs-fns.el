@@ -308,7 +308,6 @@ This works on the current region."
 (defun bs-relative-path-to (current target)
   "Find a relative path to `target` starting from `current`"
   (let ((root (locate-dominating-file current target)))
-    (file-relative-name (concat root "/" target) current)))
-
+    (file-relative-name (concat root target) (file-name-directory current))))
 
 (provide 'bs-fns)
