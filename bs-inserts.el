@@ -11,6 +11,7 @@
 (custom-set-variables
  '(auto-insert-alist '())
  '(auto-insert 'other)
+ '(auto-insert-query nil)
  '(auto-insert-directory "~/.emacs.d/inserts/"))
 
 (defun bs-inserts-reset ()
