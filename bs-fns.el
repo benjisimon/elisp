@@ -310,4 +310,10 @@ This works on the current region."
   (let ((root (locate-dominating-file current target)))
     (file-relative-name (concat root target) (file-name-directory current))))
 
+(defun svn-status-from-root ()
+  "Run svn-status but from the root of this project"
+  (interactive)
+  (let ((root (locate-dominating-file default-directory ".svn")))
+    (svn-status root)))
+
 (provide 'bs-fns)
