@@ -296,31 +296,6 @@ This works on the current region."
       (mkdir dir t))
     (find-file (format "%s/%s.md" dir timestamp))))
     
-         
-
-(defun svnassist-switch-release ()
-  "Switch the current repo to current release"
-  (interactive)
-  (let ((root (locate-dominating-file default-directory ".svn")))
-    (let ((default-directory root))
-      (shell-command "svnassist switch-release"))))
-
-
-(defun svnassist-merge-release ()
-  "Merge the release into the current directory"
-  (interactive)
-  (let ((root (locate-dominating-file default-directory ".svn")))
-    (let ((default-directory root))
-      (shell-command "svnassist merge-release"))))
-
-
-(defun svnassist-merge-trunk ()
-  "Merge the trunk into the current directory"
-  (interactive)
-  (let ((root (locate-dominating-file default-directory ".svn")))
-    (let ((default-directory root))
-      (shell-command "svnassist merge-in-trunk"))))
-
 (defun bs-relative-path-to (current target)
   "Find a relative path to `target` starting from `current`"
   (let ((root (locate-dominating-file current target)))
