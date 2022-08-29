@@ -294,6 +294,7 @@ This works on the current region."
                (t (format "%s/internal/misc" base)))))
     (unless (file-accessible-directory-p dir)
       (mkdir dir t))
+    (bookmark-set "project-notes-anchor" nil)
     (find-file (format "%s/%s.md" dir timestamp))))
     
 (defun bs-relative-path-to (current target)
