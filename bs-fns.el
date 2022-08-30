@@ -279,24 +279,7 @@ This works on the current region."
       nil)))
 
 
-(defun project-notes-find-file-today ()
-  (interactive)
-  "Quickly open up a notes file or create one for today."
-  (let* ((base "~/dt/i2x/project-notes/src/main")
-         (timestamp (format-time-string "%Y-%m-%d"))
-         (branch (current-vc-branch))
-         (customer (current-customer))
-         (dir (cond
-               ((and branch customer)
-                (format "%s/%s/%s" base customer branch))
-               (customer
-                (format "%s/%s/misc" base customer))
-               (t (format "%s/internal/misc" base)))))
-    (unless (file-accessible-directory-p dir)
-      (mkdir dir t))
-    (bookmark-set "project-notes-anchor" nil)
-    (find-file (format "%s/%s.md" dir timestamp))))
-    
+
 (defun bs-relative-path-to (current target)
   "Find a relative path to `target` starting from `current`"
   (let ((root (locate-dominating-file current target)))
