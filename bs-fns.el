@@ -262,6 +262,7 @@ This works on the current region."
   (let ((d default-directory))
     (cond
      ((locate-dominating-file d ".git")
+      (vc-file-clearprops default-directory)
       (vc-git--symbolic-ref default-directory))
      ((locate-dominating-file d ".svn")
       (let ((url (svn-current-url)))
