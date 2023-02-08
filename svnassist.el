@@ -40,5 +40,11 @@
     (let ((default-directory root))
       (shell-command (format "svnassist review-branch %s" branch)))))
 
+(defun svnassist-show-issue ()
+  "What issue does this branch fix?"
+  (interactive)
+  (let ((root (locate-dominating-file default-directory ".svn")))
+    (let ((default-directory root))
+      (shell-command "svnassist show-issue"))))
 
 (provide 'svnassist)
