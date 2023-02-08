@@ -47,4 +47,15 @@
     (let ((default-directory root))
       (shell-command "svnassist show-issue"))))
 
+(defun svnassist-qlog ()
+  "quick log of our directory"
+  (interactive)
+  (let ((root (locate-dominating-file default-directory ".svn")))
+    (let ((default-directory root))
+      (let ((output (shell-command-to-string "svnassist qlog")))
+        (switch-to-buffer "*qlog*")
+        (erase-buffer)
+        (insert output)
+        (beginning-of-buffer)))))
+
 (provide 'svnassist)
