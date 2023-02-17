@@ -222,6 +222,13 @@ This works on the current region."
          (client (replace-regexp-in-string ".*/i2x/\\([^/]*\\)/.*" "\\1" dir)))
     (browse-url (format "http://u.i2x.us/%s-%s" resource client))))
 
+(defun browse-synonyms-url ()
+  "Look up the current word on powerthesaurus"
+  (interactive)
+  (let* ((word (thing-at-point  'word))
+         (url  (format "https://www.powerthesaurus.org/%s/synonyms" (url-encode-url word))))
+    (browse-url url)))
+
 (defun ediff-copy-both-to-C ()
   (interactive)
   (ediff-copy-diff ediff-current-difference nil 'C nil
