@@ -23,7 +23,8 @@
        "https://oauth2.googleapis.com/token"
        "https://www.googleapis.com/auth/blogger"
        hbo-blogger-client-id
-       hbo-blogger-client-secret))
+       hbo-blogger-client-secret
+       hbo-blogger-redirect-uri))
 
 (defun hbo-blogger-verify-response (response)
   "Check a response to make sure it's valid"
