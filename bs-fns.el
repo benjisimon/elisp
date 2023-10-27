@@ -14,6 +14,12 @@
   (interactive)
   (insert (md5 (format "%s" (random)))))
 
+(defun insert-current-file-name-sans-extension ()
+  "Insert the filename of the current buffer without an extension."
+  (interactive)
+  (insert (file-name-sans-extension (buffer-name))))
+
+
 (defun cleanup-iso-latin-chars ()
   "Cleanup a buffer full of iso latin characters into plain ASCII."
   (interactive)
