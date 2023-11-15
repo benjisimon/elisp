@@ -305,4 +305,15 @@ This works on the current region."
   (let ((root (locate-dominating-file default-directory ".svn")))
     (svn-status root)))
 
+
+(defun php-insert-namespace ()
+  "Guess the namespace for the current file"
+  (interactive)
+  (let ((dir (file-name-directory buffer-file-name)))
+    (cond ((string-match ".*/asldeafined/src/.*/classes/\\(.*\\)" dir)
+           (insert "namespace asldeafined\\")
+           (insert (replace-regexp-in-string "\\\\$" "" (replace-regexp-in-string "[/]" "\\\\" (match-string 1 dir))))
+           (insert ";"))
+          (t (error "Don't know how to find the namespace for %s" dir)))))
+
 (provide 'bs-fns)
