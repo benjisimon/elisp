@@ -314,6 +314,10 @@ This works on the current region."
            (insert "namespace asldeafined\\")
            (insert (replace-regexp-in-string "\\\\$" "" (replace-regexp-in-string "[/]" "\\\\" (match-string 1 dir))))
            (insert ";"))
+          ((string-match ".*/easycbm/src/.*/app/\\(.*\\)" dir)
+           (insert "namespace ")
+           (insert (replace-regexp-in-string "\\\\$" "" (replace-regexp-in-string "[/]" "\\\\" (match-string 1 dir))))
+           (insert ";"))
           (t (error "Don't know how to find the namespace for %s" dir)))))
 
 (provide 'bs-fns)
