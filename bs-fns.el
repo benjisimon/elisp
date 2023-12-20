@@ -323,6 +323,10 @@ This works on the current region."
            (when dir (insert "\\"))
            (insert (replace-regexp-in-string "\\\\$" "" (replace-regexp-in-string "[/]" "\\\\" (match-string 1 dir))))
            (insert ";"))
+          ((string-match ".*/signonconnect/src/.*/classes/\\(.*\\)" dir)
+           (insert "namespace signonconnect\\")
+           (insert (replace-regexp-in-string "\\\\$" "" (replace-regexp-in-string "[/]" "\\\\" (match-string 1 dir))))
+           (insert ";"))
           (t (error "Don't know how to find the namespace for %s" dir)))))
 
 (provide 'bs-fns)
