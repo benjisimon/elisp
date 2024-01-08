@@ -6,7 +6,7 @@
 
 (require 'autoinsert)
 
-(auto-insert-mode)
+(auto-insert-mode t)
 
 (custom-set-variables
  '(auto-insert-alist '())
