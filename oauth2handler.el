@@ -8,7 +8,7 @@
 
 (require 'oauth2)
 
-(defun oauth2handler-start-google-auth (redirect-url auth-url token-url scope client-id client-secret)
+(defun oauth2handler-start-auth (redirect-url auth-url token-url scope client-id client-secret)
   "Given oauth2 parameters, launch a browser interact withoauth2handler.
 This page will ultimately generate JSON which you should paste into the buffer
 shown to the user."
@@ -61,4 +61,4 @@ shown to the user."
         (kill-buffer (buffer-name))
         token))
 
-(proivde 'oauth2handler)
+(provide 'oauth2handler)

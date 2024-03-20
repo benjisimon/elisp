@@ -10,6 +10,7 @@
 (require 'oauth2)
 (require 'epa-file)
 (require 'json)
+(require 'oauth2handler)
 
 (defvar hbo-blogger-posts-dir
   (format "%s%s" user-emacs-directory "posts"))
@@ -20,17 +21,33 @@
   "https://www.googleapis.com/auth/blogger")
 (defvar hbo-blogger-oauth-redirect-url nil)
 (defvar hbo-blogger-oauth-auth-url
-  "https://accounts.google.com/o/oauth2/v2/auth")
+  "https://accounts.google.com/o/oauth2/auth")
 (defvar hbo-blogger-oauth-token-url
-  "https://oauth2.googleapis.com/token")
+  "https://www.googleapis.com/oauth2/v3/token")
 
-(defvar hbo-blogger-token
-      (oauth2-auth-and-store
-       hbo-blogger-oauth-auth-url
-       hbo-blogger-oauth-token-url
-       hbo-blogger-oauth-scope
-       hbo-blogger-client-id
-       hbo-blogger-client-secret))
+(defvar hbo-blogger-token nil)
+
+(defun hbo-blogger-auth-start ()
+  "Start the Oauth2 authentication process in the browser"
+  (interactive)
+  (oauth2handler-start-auth
+   hbo-blogger-oauth-redirect-url
+   hbo-blogger-oauth-auth-url
+   hbo-blogger-oauth-token-url
+   hbo-blogger-oauth-scope
+   hbo-blogger-client-id
+   hbo-blogger-client-secret))
+
+(defun hbo-blogger-auth-setup ()
+  "Set us up to be authenticated or trigger an error saying we need a setup."
+  (interactive)
+  (setq hbo-blogger-token (oauth2-auth-and-store
+                           hbo-blogger-oauth-auth-url
+                           hbo-blogger-oauth-token-url
+                           hbo-blogger-oauth-scope
+                           hbo-blogger-client-id
+                           hbo-blogger-client-secret)))
+
 
 (defun hbo-blogger-verify-response (response)
   "Check a response to make sure it's valid"
