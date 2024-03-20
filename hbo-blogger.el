@@ -19,11 +19,15 @@
 (defvar hbo-blogger-oauth-scope
   "https://www.googleapis.com/auth/blogger")
 (defvar hbo-blogger-oauth-redirect-url nil)
+(defvar hbo-blogger-oauth-auth-url
+  "https://accounts.google.com/o/oauth2/v2/auth")
+(defvar hbo-blogger-oauth-token-url
+  "https://oauth2.googleapis.com/token")
 
 (defvar hbo-blogger-token
       (oauth2-auth-and-store
-       "https://accounts.google.com/o/oauth2/v2/auth"
-       "https://oauth2.googleapis.com/token"
+       hbo-blogger-oauth-auth-url
+       hbo-blogger-oauth-token-url
        hbo-blogger-oauth-scope
        hbo-blogger-client-id
        hbo-blogger-client-secret))
