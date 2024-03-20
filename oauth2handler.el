@@ -34,6 +34,13 @@ shown to the user."
               oa2h-client-secret client-secret))
 
 
+(defun oauth2handler-setup-p (auth-url token-url scope)
+  (let* ((id (oauth2-compute-id auth-url token-url scope))
+         (plstore (plstore-open oauth2-token-file))
+         (plist (plstore-get plstore id)))
+    (message "found: %s" plist)
+    plist))
+
 (defun oauth2handler-save-json ()
   "Process the JSON pasted into the buffer"
   (interactive)

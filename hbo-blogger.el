@@ -41,12 +41,16 @@
 (defun hbo-blogger-auth-setup ()
   "Set us up to be authenticated or trigger an error saying we need a setup."
   (interactive)
-  (setq hbo-blogger-token (oauth2-auth-and-store
-                           hbo-blogger-oauth-auth-url
-                           hbo-blogger-oauth-token-url
-                           hbo-blogger-oauth-scope
-                           hbo-blogger-client-id
-                           hbo-blogger-client-secret)))
+  (if (oauth2handler-setup-p hbo-blogger-oauth-auth-url
+                             hbo-blogger-oauth-token-url
+                             hbo-blogger-oauth-scope)
+      (setq hbo-blogger-token (oauth2-auth-and-store
+                               hbo-blogger-oauth-auth-url
+                               hbo-blogger-oauth-token-url
+                               hbo-blogger-oauth-scope
+                               hbo-blogger-client-id
+                               hbo-blogger-client-secret))
+    (error "Authentication not yet set up for hbo-blogger. Invoke: M-x hbo-blogger-auth-start.")))
 
 
 (defun hbo-blogger-verify-response (response)
