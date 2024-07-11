@@ -146,9 +146,9 @@
 
 (defun hbo-blogger-buffer-name-to (what)
   (let ((parts (split-string (buffer-name) "[.]")))
-    (case what
-      ((blog-id) (elt parts 0))
-      ((post-id) (elt parts 1)))))
+    (pcase what
+      ('blog-id (elt parts 0))
+      ('post-id (elt parts 1)))))
                                   
 
 (defun hbo-blogger-preview-buffer ()
