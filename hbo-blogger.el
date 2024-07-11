@@ -177,4 +177,28 @@
                     (title   . ,(gethash "title" post)))))
     (hbo-blogger-put url payload)))
 
+
+(defun hbo-blogger-proofread ()
+  "Proofread either the current buffer or region using ChatGPT magic."
+  (interactive)
+  (let ((setup (concat "You are a blog proof reader. Your job is to "
+                       "take in HTML text and generate a version of that text "
+                       "that is free from spelling, grammer and other "
+                       "significant mistakes. You should try to keep "
+                       "the text generally unchanged, letting the existing "
+                       "tone stand. You should output the HTML that was provided "
+                       "indented in a similar way as to how it was entered. "
+                       "You should also include feedback abot what was changed. "
+                       "This feedback should be included in a single HTML "
+                       "comment. It should have the form:\n"
+                       "\n"
+                       "<!--\n"
+                       "-- BEGIN FIXES --\n"
+                       " (description of the changes formatted via markdown)\n"
+                       "-- END FIXES --\n"
+                       "\n"
+                       "There should be one blank line between the content and the "
+                       "fixes, and two blank lines after the fixes comment.")))
+    (gptel-request nil :in-place t :system setup)))
+
 (provide 'hbo-blogger)
