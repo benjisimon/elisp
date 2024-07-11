@@ -35,8 +35,9 @@
 
 (defun project-notes-maybe-enable-mode ()
   "Maybe turn on our project notes."
-  (cond ((string-match ".*dt/i2x/project-notes/.*" buffer-file-name)
-         (project-notes-mode))))
+  (when buffer-file-name
+    (cond ((string-match ".*dt/i2x/project-notes/.*" buffer-file-name)
+           (project-notes-mode)))))
 
 (add-hook 'markdown-mode-hook 'project-notes-maybe-enable-mode)
 
