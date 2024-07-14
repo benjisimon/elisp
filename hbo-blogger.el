@@ -11,7 +11,8 @@
 (require 'epa-file)
 (require 'json)
 (require 'oauth2handler)
-
+(require 'uuid)
+u
 (defvar hbo-blogger-posts-dir
   (format "%s%s" user-emacs-directory "posts"))
 
@@ -178,27 +179,28 @@
     (hbo-blogger-put url payload)))
 
 
-(defun hbo-blogger-proofread ()
+(defun hbo-blogger-proofread (start end)
   "Proofread either the current buffer or region using ChatGPT magic."
-  (interactive)
-  (let ((setup (concat "You are a blog proof reader. Your job is to "
+  (interactive "r")
+  (when (not (use-region-p))
+    (error "No region selected"))
+  (let ((marker (format "[proof]"))
+        (setup (concat "You are a blog proof reader. Your job is to "
                        "take in HTML text and generate a version of that text "
                        "that is free from spelling, grammer and other "
-                       "significant mistakes. You should try to keep "
-                       "the text generally unchanged, letting the existing "
-                       "tone stand. You should output the HTML that was provided "
-                       "indented in a similar way as to how it was entered. "
-                       "You should also include feedback abot what was changed. "
-                       "This feedback should be included in a single HTML "
-                       "comment. It should have the form:\n"
-                       "\n"
-                       "<!--\n"
-                       "-- BEGIN FIXES --\n"
+                       "significant mistakes. "
+                       "If you make corrections in a paragraph you should "
+                       "prefix the paragraph with an HTML comment with the following"
+                       "structure:\n"
+                       "<!-- PROOF: \n"
                        " (description of the changes formatted via markdown)\n"
+                       "\n"
+                       " (description of suggestions for how the text could be improved "
+                       " formatted in markdown)\n"
                        "-- END FIXES --\n"
                        "\n"
                        "There should be one blank line between the content and the "
                        "fixes, and two blank lines after the fixes comment.")))
-    (gptel-request nil :in-place t :system setup)))
+    (insert marker)))
 
 (provide 'hbo-blogger)
