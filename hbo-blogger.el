@@ -12,7 +12,7 @@
 (require 'json)
 (require 'oauth2handler)
 (require 'uuid)
-u
+
 (defvar hbo-blogger-posts-dir
   (format "%s%s" user-emacs-directory "posts"))
 
