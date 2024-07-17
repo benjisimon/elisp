@@ -179,28 +179,50 @@
     (hbo-blogger-put url payload)))
 
 
+(defvar hbo-blogger-proofread-prompt
+  "The prompt to pass to ChatGTP to use for proofreading."
+  (concat "You are a blog proof reader. Your job is to "
+          "take in HTML and produce HTML. You should a version of that text "
+          "that is free from spelling, grammer and other "
+          "significant mistakes. "
+          "If you make corrections in a paragraph you should "
+          "prefix the paragraph with an HTML comment with the following"
+          "structure:\n"
+          "<!-- PROOF: \n"
+          " (description of the changes formatted via markdown)\n"
+          "\n"
+          " (description of suggestions for how the text could be improved "
+          " formatted in markdown)\n"
+          "-- END FIXES --\n"
+          "\n"
+          "There should be one blank line between the content and the "
+          "fixes, and two blank lines after the fixes comment."))
+
+(defun hbo-blogger-proofread-apply-fix (marker correction)
+  "Apply the changes chatgpt has suggested."
+  (save-excursion
+    (goto-char (point-min))
+    (when (re-search-forward marker nil t)
+      (let ((start (point)))
+        (when (re-search-forward marker nil t)
+          (buffer-substring start (line-beginning-position)))))))
+
 (defun hbo-blogger-proofread (start end)
   "Proofread either the current buffer or region using ChatGPT magic."
   (interactive "r")
   (when (not (use-region-p))
     (error "No region selected"))
-  (let ((marker (format "[proof]"))
-        (setup (concat "You are a blog proof reader. Your job is to "
-                       "take in HTML text and generate a version of that text "
-                       "that is free from spelling, grammer and other "
-                       "significant mistakes. "
-                       "If you make corrections in a paragraph you should "
-                       "prefix the paragraph with an HTML comment with the following"
-                       "structure:\n"
-                       "<!-- PROOF: \n"
-                       " (description of the changes formatted via markdown)\n"
-                       "\n"
-                       " (description of suggestions for how the text could be improved "
-                       " formatted in markdown)\n"
-                       "-- END FIXES --\n"
-                       "\n"
-                       "There should be one blank line between the content and the "
-                       "fixes, and two blank lines after the fixes comment.")))
-    (insert marker)))
-
-(provide 'hbo-blogger)
+  (let ((marker (format "[proof:%s]\n" (uuid-string)))
+        (input (buffer-substring start end)))
+    (save-excursion
+      (goto-char start)
+      (insert marker)
+      (goto-char (+ end (length marker)))
+      (insert marker))
+    (gptel-request input
+      :callback (lambda (response info)
+                  (if response
+                      (hbo-blogger-proofread-apply-fix (plist-get info :context) response)
+                    (error "Proofread error: %s" (plist-get info :status))))
+      :context marker
+      :system hbo-blogger-proofread-prompt)))
