@@ -305,4 +305,31 @@ This works on the current region."
   (let ((root (locate-dominating-file default-directory ".svn")))
     (svn-status root)))
 
+(defvar bs-gptel-define-word-prompt
+  "Please give a short definition of this word or phrase. Then, provide 3 usage examples, synonyms and antyonyms"
+  "The ChatGPT style prompt used define a word.")
+
+
+(defun bs-gptel-stash-response (response)
+  "Store a response in a well known buffer we can look at if we want"
+  (let ((buffer (get-buffer-create "*ChatGPT Responses*")))
+    (with-current-buffer buffer
+      (save-excursion
+        (goto-char (point-max))
+        (insert "\n\n###\n\n")
+        (insert response)))))
+
+
+(defun bs-gptel-define-word (start end)
+  "Use ChatGPT to define the current word of the region."
+  (interactive "r")
+  (unless (region-active-p)
+    (error "you must have a region set"))
+  (gptel-request nil
+    :callback (lambda (response info)
+                (bs-gptel-stash-response response)
+                (message response))
+    :system bs-gptel-define-word-prompt))
+
+
 (provide 'bs-fns)
