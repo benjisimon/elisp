@@ -198,21 +198,22 @@
           "There should be one blank line between the content and the "
           "fixes, and two blank lines after the fixes comment."))
 
-(defun hbo-blogger-proofread-apply-fix (marker correction)
+(defun hbo-blogger-proofread-apply-fix (buffer marker correction)
   "Apply the changes chatgpt has suggested."
-  (save-excursion
+  (with-current-buffer buffer
     (goto-char (point-min))
     (when (re-search-forward marker nil t)
       (let ((start (point)))
         (when (re-search-forward marker nil t)
-          (buffer-substring start (line-beginning-position)))))))
+          (delete-region start (line-beginning-position))
+          (insert correction))))))
 
 (defun hbo-blogger-proofread (start end)
   "Proofread either the current buffer or region using ChatGPT magic."
   (interactive "r")
   (when (not (use-region-p))
     (error "No region selected"))
-  (let ((marker (format "[proof:%s]\n" (uuid-string)))
+  (let ((marker (format "{proof:%s}\n" (uuid-string)))
         (input (buffer-substring start end)))
     (save-excursion
       (goto-char start)
@@ -222,7 +223,9 @@
     (gptel-request input
       :callback (lambda (response info)
                   (if response
-                      (hbo-blogger-proofread-apply-fix (plist-get info :context) response)
+                      (hbo-blogger-proofread-apply-fix (plist-get info :buffer)
+                                                       (plist-get info :context)
+                                                       response)
                     (error "Proofread error: %s" (plist-get info :status))))
       :context marker
       :system hbo-blogger-proofread-prompt)))
