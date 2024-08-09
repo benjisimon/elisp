@@ -182,7 +182,7 @@
 (defvar hbo-blogger-proofread-prompt
   "The prompt to pass to ChatGTP to use for proofreading."
   (concat "You are a blog proof reader. Your job is to "
-          "take in HTML and produce HTML. You should a version of that text "
+          "take in HTML and produce HTML. You should generate a version of that text "
           "that is free from spelling, grammer and other "
           "significant mistakes. "
           "If you make corrections in a paragraph you should "
@@ -229,3 +229,5 @@
                     (error "Proofread error: %s" (plist-get info :status))))
       :context marker
       :system hbo-blogger-proofread-prompt)))
+
+(provide 'hbo-blogger)

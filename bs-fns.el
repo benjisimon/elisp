@@ -2,6 +2,8 @@
 ;; Handy functions that Ben uses
 ;;
 
+(require 'gptel)
+
 ;; extra functions
 (defun insert-timestamp ()
   "Insert a timestamp into the current buffer."
