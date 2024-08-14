@@ -310,26 +310,27 @@ This works on the current region."
   "The ChatGPT style prompt used define a word.")
 
 
-(defun bs-gptel-stash-response (response)
+(defun bs-gptel-stash-response (buffer prompt response)
   "Store a response in a well known buffer we can look at if we want"
-  (let ((buffer (get-buffer-create "*ChatGPT Responses*")))
+  (let ((buffer (get-buffer-create buffer)))
     (with-current-buffer buffer
-      (save-excursion
-        (goto-char (point-max))
-        (insert "\n\n###\n\n")
-        (insert response)))))
-
+      (erase-buffer)
+      (insert prompt)
+      (insert "\n\n-->\n\n")
+      (insert response))))
 
 (defun bs-gptel-define-word (start end)
   "Use ChatGPT to define the current word of the region."
   (interactive "r")
   (unless (region-active-p)
     (error "you must have a region set"))
-  (gptel-request nil
-    :callback (lambda (response info)
-                (bs-gptel-stash-response response)
-                (message response))
-    :system bs-gptel-define-word-prompt))
+  (let ((input (buffer-substring-no-properties (region-beginning) (region-end))))
+    (gptel-request nil
+      :callback (lambda (response info)
+                  (bs-gptel-stash-response "*Last Definition*" (plist-get info :context) response)
+                  (message response))
+      :system bs-gptel-define-word-prompt
+      :context input)))
 
 
 (provide 'bs-fns)
