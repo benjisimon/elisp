@@ -335,4 +335,17 @@ This works on the current region."
       :context input)))
 
 
+(defun bs-svg-preview-region (start end)
+  "Consider the region svg code and review it"
+  (interactive "r")
+  (unless (region-active-p)
+    (error "you must have a region set"))
+  (let ((svg (buffer-substring-no-properties (region-beginning) (region-end)))
+        (buffer-name "*SVG Preview*"))
+    (with-temp-buffer
+      (switch-to-buffer (get-buffer-create buffer-name))
+      (erase-buffer)
+      (insert svg)
+      (image-mode))))
+
 (provide 'bs-fns)
