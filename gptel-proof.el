@@ -8,12 +8,27 @@
 (defvar gptel-proof-gentle-prompt
   (concat "Please fix spelling, punctuation and grammar in the follow text. "
           "Where possible, keep the word choice and tone unchanged. "
-          "Output only the corrected text. Try to keep line breaks unchanged."))
+          "Output only the corrected text.\n"
+          "\n"
+          "The outputed text should use a line length line breaks "
+          "that are similar to the input text. Visually, the old "
+          "and new text should look similar. They should also have "
+          "as few whitespace changes as possible. The new and old text "
+          "will be run through the unix command diff, so only "
+          "critical changes should be visible."))
 
 (defvar gptel-proof-aggressive-prompt
   (concat "Please fix spelling, punctuation and grammar in the follow text. "
-          "Make where possible, make the text easier to read by reducing clutter and improving word choice. "
-          "Output only the corrected text. Try to keep line breaks unchanged."))
+          "Where possible, rewrite the text to use  active voice and to use fewer words."
+          "Use a tone that's appropriate to publish in a social media post, so that it's casual "
+          "but still something that my Mom would understand.\n\n"
+          "\n"
+          "The outputed text should use a line length line breaks "
+          "that are similar to the input text. Visually, the old "
+          "and new text should look similar. They should also have "
+          "as few whitespace changes as possible. The new and old text "
+          "will be run through the unix command diff, so only "
+          "critical changes should be visible."))
 
 (defun gptel-proof-apply-fix (buffer marker correction)
   "Apply the changes chatgpt has suggested."
