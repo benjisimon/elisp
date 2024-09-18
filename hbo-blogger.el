@@ -43,7 +43,8 @@
   (interactive)
   (if (oauth2handler-setup-p hbo-blogger-oauth-auth-url
                              hbo-blogger-oauth-token-url
-                             hbo-blogger-oauth-scope)
+                             hbo-blogger-oauth-scope
+                             hbo-blogger-client-id)
       (setq hbo-blogger-token (oauth2-auth-and-store
                                hbo-blogger-oauth-auth-url
                                hbo-blogger-oauth-token-url

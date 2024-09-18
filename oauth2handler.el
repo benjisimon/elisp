@@ -34,8 +34,8 @@ shown to the user."
               oa2h-client-secret client-secret))
 
 
-(defun oauth2handler-setup-p (auth-url token-url scope)
-  (let* ((id (oauth2-compute-id auth-url token-url scope))
+(defun oauth2handler-setup-p (auth-url token-url scope client-id)
+  (let* ((id (oauth2-compute-id auth-url token-url scope client-id))
          (plstore (plstore-open oauth2-token-file))
          (plist (plstore-get plstore id)))
     (message "found: %s" plist)
@@ -48,7 +48,7 @@ shown to the user."
          (access-token (gethash "access_token" json))
          (refresh-token (gethash "refresh_token" json))
          (plstore (plstore-open oauth2-token-file))
-         (id (oauth2-compute-id oa2h-auth-url oa2h-token-url oa2h-scope))
+         (id (oauth2-compute-id oa2h-auth-url oa2h-token-url oa2h-scope oa2h-client-id))
          (token (make-oauth2-token
                  :client-id oa2h-client-id
                  :client-secret oa2h-client-secret
