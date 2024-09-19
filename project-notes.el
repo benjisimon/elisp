@@ -20,7 +20,7 @@
     (unless (file-accessible-directory-p dir)
       (mkdir dir t))
     (bookmark-set project-notes-bookmark-name nil)
-    (find-file (format "%s/%s.md" dir timestamp))))
+    (find-file (format "%s/%s.org" dir timestamp))))
 
 (defun project-notes-jump-back ()
   "Go back to where we launched project notes"
@@ -40,5 +40,6 @@
            (project-notes-mode)))))
 
 (add-hook 'markdown-mode-hook 'project-notes-maybe-enable-mode)
+(add-hook 'org-mode-hook 'project-notes-maybe-enable-mode)
 
 (provide 'project-notes)
