@@ -39,6 +39,19 @@
     (cond ((string-match ".*dt/i2x/project-notes/.*" buffer-file-name)
            (project-notes-mode)))))
 
+(defun project-notes-export-to-html ()
+  "Export the current project notes file to an HTML file"
+  (interactive)
+  (let* ((parts (reverse (s-split "/" (file-name-sans-extension (buffer-file-name)))))
+         (file (first parts))
+         (branch (second parts))
+         (project (third parts))
+         (export-file (format "~/dl/project-notes/%s/%s_%s.html" project branch file)))
+    (unless (file-exists-p (file-name-directory export-file))
+      (make-directory (file-name-directory export-file) t))
+    (org-export-to-file 'html export-file)))
+
+
 (add-hook 'markdown-mode-hook 'project-notes-maybe-enable-mode)
 (add-hook 'org-mode-hook 'project-notes-maybe-enable-mode)
 
