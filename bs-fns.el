@@ -146,6 +146,7 @@ This works on the current region."
   (interactive "r")
   (let* ((text (chomp (buffer-substring-no-properties beg end)))
          (line-number (line-number-at-pos))
+         (mode major-mode)
          (file (buffer-file-name))
          (path (multi-replace-regexp-in-string
                 '(("^.*branches/" . "")
@@ -156,12 +157,7 @@ This works on the current region."
     (with-temp-buffer
       (insert text)
       (goto-char (point-min))
-      (while (re-search-forward "^" nil t)
-        (replace-match "| " nil nil))
-      (goto-char (point-min))
-      (insert (format "+---[%s:%s]\n" path line-number))
-      (goto-char (point-max))
-      (insert "\n+---\n")
+      (insert (format "[%s:%d]\n"  path line-number))
       (kill-region (point-min) (point-max)))))
 
 
