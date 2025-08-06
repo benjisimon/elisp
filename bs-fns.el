@@ -282,6 +282,15 @@ This works on the current region."
               (t nil))))
      (t nil))))
 
+
+(defun run-customer-mode-hook (mode-hook-name)
+  "Run all hooks associated with a specific mode and the current customer."
+  (interactive)
+  (let ((customer-hook (intern (format "%s-%s" (current-customer) mode-hook-name))))
+    (when (boundp customer-hook)
+      (run-hooks customer-hook))))
+
+
 (defun current-customer ()
   "Guess the customer we are looking at by looking at our path"
   (let ((d default-directory))
