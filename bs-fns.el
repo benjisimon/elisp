@@ -269,19 +269,21 @@ This works on the current region."
 (defun current-vc-branch ()
   "Guess the current branch or return nil if aren't on one"
   (require 'dsvn)
-  (let ((d default-directory))
+  (let* ((d default-directory)
+         (svn-dir (locate-dominating-file d ".svn")))
     (cond
      ((locate-dominating-file d ".git")
       (vc-file-clearprops default-directory)
       (vc-git--symbolic-ref default-directory))
-     ((locate-dominating-file d ".svn")
-      (let ((url (svn-current-url)))
+     (svn-dir
+      (let ((url (with-temp-buffer
+                   (let ((default-directory svn-dir))
+                     (svn-current-url)))))
         (cond ((string-match "/trunk\\(/\\|$\\)" url) "trunk")
               ((string-match "/branches/\\(.*?\\)\\(/\\|$\\)" url)
                (match-string 1 url))
               (t nil))))
      (t nil))))
-
 
 (defun run-customer-mode-hook (mode-hook-name)
   "Run all hooks associated with a specific mode and the current customer."
