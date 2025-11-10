@@ -19,12 +19,6 @@
   (elfeed-db-unload)
   (shell-command "elfeedassist -a sync"))
 
-(defun bs-elfeed ()
-  "Kick off elfeed but peform a sync first"
-  (interactive)
-  (bs-elfeed-db-sync)
-  (elfeed))
-
 (defun bs-elfeed-search-quit ()
   "Quit elfeed, but also do a sync"
   (interactive)
