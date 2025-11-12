@@ -14,6 +14,20 @@
          (new-tag (completing-read "Tag: " available-tags nil nil)))
     (elfeed-search-untag-all (intern new-tag))))
 
+
+(defun bs-elfeed-show-tag ()
+  (interactive)
+  (let* ((choices (elfeed-db-get-all-tags))
+         (tag  (completing-read "Tag: " choices nil nil)))
+    (elfeed-show-tag (intern tag))))
+
+
+(defun bs-elfeed-show-untag ()
+  (interactive)
+  (let* ((choices (elfeed-db-get-all-tags))
+         (tag  (completing-read "Tag: " choices nil nil)))
+    (elfeed-show-untag (intern tag))))
+
 (defun bs-elfeed-db-sync ()
   "Sync changes to our databse to a git repo for elfeed for remote access."
   (message "elfeedassist: sync")
