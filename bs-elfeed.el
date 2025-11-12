@@ -17,7 +17,7 @@
 (defun bs-elfeed-db-sync ()
   "Sync changes to our databse to a git repo for elfeed for remote access."
   (message "elfeedassist: sync")
-  (shell-command "elfeedassist -a sync"))
+  (call-process "elfeedassist" nil nil nil "-a" "sync"))
 
 (advice-add 'elfeed :before 'bs-elfeed-db-sync)
 (advice-add 'elfeed-search-quit-window :after 'bs-elfeed-db-sync)
