@@ -30,6 +30,7 @@
 
 (defun bs-elfeed-db-sync ()
   "Sync changes to our databse to a git repo for elfeed for remote access."
+  (elfeed-db-unload)
   (message "elfeedassist: sync")
   (call-process "elfeedassist" nil nil nil "-a" "sync"))
 
