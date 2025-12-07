@@ -1,8 +1,11 @@
 ;;
 ;; Ben Simon time related functions
 
+(require 'cl-lib)
+
 (defun bs-parse-duration (spec)
   "Given a specification of a duration, return a fractional number of hours"
+  (interactive)
   ;; spec can be in the format:
   ;;  T, T, T
   ;; where T is:
@@ -27,6 +30,14 @@
                 ;; Simple number
                 (string-to-number part)))
             parts))))
+
+(defun bs-sum-durations (specs)
+  "Add up durations as defined by the list of specifications."
+  (interactive)
+  (seq-reduce (lambda (carry spec)
+                (+ carry (bs-parse-duration spec)))
+              specs 0))
+
 
 (defun bs--parse-time (time-str)
   "Parse a time string to hours as a float."
