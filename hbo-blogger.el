@@ -53,7 +53,9 @@
                                hbo-blogger-oauth-token-url
                                hbo-blogger-oauth-scope
                                hbo-blogger-client-id
-                               hbo-blogger-client-secret))
+                               hbo-blogger-client-secret
+                               hbo-blogger-oauth-redirect-url
+                               "ben"))
     (error "Authentication not yet set up for hbo-blogger. Invoke: M-x hbo-blogger-auth-start.")))
 
 

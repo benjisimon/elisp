@@ -35,7 +35,7 @@ shown to the user."
 
 
 (defun oauth2handler-setup-p (auth-url token-url scope client-id)
-  (let* ((id (oauth2-compute-id auth-url token-url scope client-id))
+  (let* ((id (oauth2-compute-id auth-url token-url scope client-id (getenv "USER")))
          (plstore (plstore-open oauth2-token-file))
          (plist (plstore-get plstore id)))
     (message "found: %s" plist)
@@ -48,24 +48,23 @@ shown to the user."
          (access-token (gethash "access_token" json))
          (refresh-token (gethash "refresh_token" json))
          (plstore (plstore-open oauth2-token-file))
-         (id (oauth2-compute-id oa2h-auth-url oa2h-token-url oa2h-scope oa2h-client-id))
+         (id (oauth2-compute-id oa2h-auth-url oa2h-token-url oa2h-scope oa2h-client-id (getenv "USER")))
          (token (make-oauth2-token
                  :client-id oa2h-client-id
                  :client-secret oa2h-client-secret
                  :access-token access-token
                  :refresh-token refresh-token
                  :token-url oa2h-token-url
-                 :access-response json
-                 :plstore plstore
-                 :plstore-id id)))
-        (plstore-put plstore id nil `(:access-token
-                                      ,(oauth2-token-access-token token)
-                                      :refresh-token
-                                      ,(oauth2-token-refresh-token token)
-                                      :access-response
-                                      ,(oauth2-token-access-response token)))
-        (plstore-save plstore)
-        (kill-buffer (buffer-name))
-        token))
+                 :access-response json)))
+    (plstore-put plstore id nil
+                 `(:request-cache
+                   ,(oauth2-token-request-cache token)
+                   :code-verifier
+                   ,(oauth2-token-code-verifier token)
+                   :access-response
+                   ,(oauth2-token-access-response token)))
+    (plstore-save plstore)
+    (kill-buffer (buffer-name))
+    token))
 
 (provide 'oauth2handler)
