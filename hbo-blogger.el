@@ -24,6 +24,8 @@
   "https://accounts.google.com/o/oauth2/auth")
 (defvar hbo-blogger-oauth-token-url
   "https://www.googleapis.com/oauth2/v3/token")
+(defvar hbo-blogger-oauth-username (getenv "USER"))
+(defvar hbo-blogger-oauth-hostname "www.googleapis.com")
 
 (defvar hbo-blogger-token nil)
 
@@ -39,7 +41,9 @@
    hbo-blogger-oauth-token-url
    hbo-blogger-oauth-scope
    hbo-blogger-client-id
-   hbo-blogger-client-secret))
+   hbo-blogger-client-secret
+   hbo-blogger-oauth-username
+   hbo-blogger-oauth-hostname))
 
 (defun hbo-blogger-auth-setup ()
   "Set us up to be authenticated or trigger an error saying we need a setup."
@@ -47,15 +51,17 @@
   (if (oauth2handler-setup-p hbo-blogger-oauth-auth-url
                              hbo-blogger-oauth-token-url
                              hbo-blogger-oauth-scope
-                             hbo-blogger-client-id)
+                             hbo-blogger-client-id
+                             hbo-blogger-oauth-username)
       (setq hbo-blogger-token (oauth2-auth-and-store
                                hbo-blogger-oauth-auth-url
                                hbo-blogger-oauth-token-url
                                hbo-blogger-oauth-scope
                                hbo-blogger-client-id
                                hbo-blogger-client-secret
-                               hbo-blogger-oauth-redirect-url
-                               "ben"))
+                               hbo-blogger-oauth-redirect-url ""
+                               hbo-blogger-oauth-username
+                               hbo-blogger-oauth-hostname))
     (error "Authentication not yet set up for hbo-blogger. Invoke: M-x hbo-blogger-auth-start.")))
 
 
