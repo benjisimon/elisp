@@ -1,4 +1,4 @@
-;;
+;; -*- lexical-binding: t; -*-
 ;; hbo-blogger - Half Baked Opportunistic Blogger interface.
 ;; Basically, what happens when you realize you can use
 ;; the oauth2 module to trivially make requests to the blogger API.
@@ -72,43 +72,57 @@
         (error (gethash "message" e))
       response)))
 
-(defun hbo-blogger-invoke (method url headers data)
+(defun hbo-blogger-invoke (method url headers data callback)
   "General purpose blogger API request"
-  (let ((buffer
-         (oauth2-url-retrieve-synchronously
-          hbo-blogger-token url
-          method data headers)))
-    (with-current-buffer buffer
-      (goto-char url-http-end-of-headers)
-      (hbo-blogger-verify-response (json-parse-buffer)))))
+  (let* ((token (oauth2-token-access-token (oauth2-refresh-access hbo-blogger-token hbo-blogger-oauth-hostname)))
+         (all-headers (cons `("Authorization" . ,(concat "Bearer " token))
+                            headers))
+         (url-request-method method)
+         (url-request-extra-headers all-headers)
+         (url-request-data data))
+    (url-retrieve url
+                  (lambda (status)
+                    (if-let ((err (plist-get status :error)))
+                        (error (format "hbo-blogger-invoke failed: %s: %s\n%s\n(token=%s)"
+                                       url err (buffer-string) token))
+                      (goto-char url-http-end-of-headers)
+                      (let ((response (hbo-blogger-verify-response (json-parse-buffer))))
+                        (funcall callback response)))))))
 
-(defun hbo-blogger-get (url)
+(defun hbo-blogger-get (url callback)
   "internal function to make http GET's to blogger easier"
-  (hbo-blogger-invoke "GET" url nil nil))
+  (hbo-blogger-invoke "GET" url nil nil callback))
 
-(defun hbo-blogger-put (url content)
+(defun hbo-blogger-put (url content callback)
   "invoke a PUT against blogger's API"
-  (hbo-blogger-invoke "PUT" url  '(("Content-Type" . "application/json")) (encode-coding-string (json-encode content) 'utf-8)))
+  (hbo-blogger-invoke "PUT"
+                      url
+                      '(("Content-Type" . "application/json"))
+                      (encode-coding-string (json-encode content) 'utf-8)
+                      callback))
 
-(defun hbo-blogger-get-post (blog-id post-id)
+
+(defun hbo-blogger-get-post (blog-id post-id callback)
   "Retrieve a post object from blogger."
   (hbo-blogger-get (format "https://www.googleapis.com/blogger/v3/blogs/%s/posts/%s?view=admin"
-                           blog-id post-id)))
+                           blog-id post-id) callback))
 
-(defun hbo-blogger-users-blogs ()
+(defun hbo-blogger-users-blogs (callback)
   "Get an alist of all user's blogs."
-  (let ((doc   (hbo-blogger-get "https://www.googleapis.com/blogger/v3/users/self/blogs")))
-    (mapcar (lambda (item)
-              (cons (gethash "id" item)
-                    (gethash "url" item)))
-            (gethash "items" doc))))
+  (hbo-blogger-get "https://www.googleapis.com/blogger/v3/users/self/blogs"
+                   (lambda (doc)
+                     (funcall callback (mapcar (lambda (item)
+                                                 (cons (gethash "id" item)
+                                                       (gethash "url" item)))
+                                               (gethash "items" doc))))))
 
-(defun hbo-blogger-blog-id-from-url (blog-url)
-  (let ((doc (hbo-blogger-get
-              (concat
-               "https://www.googleapis.com/blogger/v3/blogs/byurl?"
-               (url-build-query-string `(("url" ,blog-url)))))))
-    (gethash "id" doc)))
+(defun hbo-blogger-blog-id-from-url (blog-url callback)
+  (hbo-blogger-get
+   (concat
+    "https://www.googleapis.com/blogger/v3/blogs/byurl?"
+    (url-build-query-string `(("url" ,blog-url))))
+   (lambda (doc)
+     (funcall callback (gethash "id" doc)))))
 
 (defun hbo-blogger-post-blog-id (post)
   (gethash "id" (gethash "blog" post)))
@@ -116,13 +130,16 @@
 (defun hbo-blogger-post-id (post)
   (gethash "id" post))
 
-(defun hbo-blogger-list-posts (blog-url params)
+(defun hbo-blogger-list-posts (blog-url params callback)
   "Get a list of recent posts given a blog URL."
-  (let* ((id (hbo-blogger-blog-id-from-url blog-url))
-         (posts-url (format "https://www.googleapis.com/blogger/v3/blogs/%s/posts?%s"
-                            id (url-build-query-string params))))
-    (let ((doc (hbo-blogger-get posts-url)))
-      (gethash "items" doc))))
+  (hbo-blogger-blog-id-from-url
+   blog-url
+   (lambda (id)
+     (let ((posts-url (format "https://www.googleapis.com/blogger/v3/blogs/%s/posts?%s"
+                              id (url-build-query-string params))))
+       (hbo-blogger-get posts-url
+                        (lambda (doc)
+                          (funcall callback (gethash "items" doc))))))))
 
 (defun hbo-blogger-edit-post (post)
   "Capture a post locally and start to edit it"
@@ -139,11 +156,13 @@
     (switch-to-buffer b)))
 
 (defun hbo-blogger-edit-latest-draft-post (blog-url)
-  (let ((post (elt (hbo-blogger-list-posts blog-url
-                                           `(("status" "draft")
-                                             ("maxResults" "1")
-                                             ("orderBy" "updated"))) 0)))
-    (hbo-blogger-edit-post post)))
+   (hbo-blogger-list-posts blog-url
+                           `(("status" "draft")
+                             ("maxResults" "1")
+                             ("orderBy" "updated"))
+                           (lambda (doc)
+                             (let ((post (elt doc 0)))
+                               (hbo-blogger-edit-post post)))))
 
 (defun hbo-blogger-edit-latest-published-post (blog-url)
   (let ((post (elt (hbo-blogger-list-posts blog-url
@@ -158,9 +177,9 @@
     (pcase what
       ('blog-id (elt parts 0))
       ('post-id (elt parts 1)))))
-                                  
 
-(defun hbo-blogger-preview-buffer ()
+
+(defun hbo-blogger-preview-buffer ()blog
   (interactive)
   (let ((blog-id (hbo-blogger-buffer-name-to 'blog-id))
         (post-id (hbo-blogger-buffer-name-to 'post-id)))
@@ -171,43 +190,22 @@
   (interactive)
   (let* ((blog-id (hbo-blogger-buffer-name-to 'blog-id))
          (post-id (hbo-blogger-buffer-name-to 'post-id))
-         (post    (hbo-blogger-get-post blog-id post-id ))
-         (content (buffer-substring-no-properties (point-min) (point-max)))
-         (url     (format "https://www.googleapis.com/blogger/v3/blogs/%s/posts/%s"
-                          blog-id post-id))
-         (payload `((kind    . "blogger#post")
-                    (id      . ,post-id)
-                    (blog    . ((id . ,blog-id)))
-                    (content . ,content)
-                    (url     . ,(gethash "url" post))
-                    (published . ,(gethash "published" post))
-                    (author  . ((id . ,(gethash "id" (gethash "author" post)))))
-                    (labels  . ,(gethash "labels" post))
-                    (title   . ,(gethash "title" post)))))
-    (hbo-blogger-put url payload)))
+         (content (buffer-substring-no-properties (point-min) (point-max))))
+    (hbo-blogger-get-post
+     blog-id post-id
+     (lambda (post)
+       (let* ((url     (format "https://www.googleapis.com/blogger/v3/blogs/%s/posts/%s"
+                               blog-id post-id))
+              (payload `((kind    . "blogger#post")
+                         (id      . ,post-id)
+                         (blog    . ((id . ,blog-id)))
+                         (content . ,content)
+                         (url     . ,(gethash "url" post))
+                         (published . ,(gethash "published" post))
+                         (author  . ((id . ,(gethash "id" (gethash "author" post)))))
+                         (labels  . ,(gethash "labels" post))
+                         (title   . ,(gethash "title" post)))))
+         (hbo-blogger-put url payload (lambda (res) res)))))))
 
-
-(defun hbo-blogger-proofread ()
-  "Proofread either the current buffer or region using ChatGPT magic."
-  (interactive)
-  (let ((setup (concat "You are a blog proof reader. Your job is to "
-                       "take in HTML text and generate a version of that text "
-                       "that is free from spelling, grammer and other "
-                       "significant mistakes. You should try to keep "
-                       "the text generally unchanged, letting the existing "
-                       "tone stand. You should output the HTML that was provided "
-                       "indented in a similar way as to how it was entered. "
-                       "You should also include feedback abot what was changed. "
-                       "This feedback should be included in a single HTML "
-                       "comment. It should have the form:\n"
-                       "\n"
-                       "<!--\n"
-                       "-- BEGIN FIXES --\n"
-                       " (description of the changes formatted via markdown)\n"
-                       "-- END FIXES --\n"
-                       "\n"
-                       "There should be one blank line between the content and the "
-                       "fixes, and two blank lines after the fixes comment.")))
-    (gptel-request nil :in-place t :system setup)))
 
 (provide 'hbo-blogger)
