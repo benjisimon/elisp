@@ -179,7 +179,7 @@
       ('post-id (elt parts 1)))))
 
 
-(defun hbo-blogger-preview-buffer ()blog
+(defun hbo-blogger-preview-buffer ()
   (interactive)
   (let ((blog-id (hbo-blogger-buffer-name-to 'blog-id))
         (post-id (hbo-blogger-buffer-name-to 'post-id)))
