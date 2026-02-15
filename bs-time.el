@@ -24,9 +24,11 @@
             (lambda (part)
               (if (string-match "\\([0-9:.]+[ap]?m?\\)[ \t]*-[ \t]*\\([0-9:.]+[ap]?m?\\)" part)
                   ;; Time range
-                  (let ((start (bs--parse-time (match-string 1 part)))
-                        (end (bs--parse-time (match-string 2 part))))
-                    (- end start))
+                  (let ((start-time (match-string 1 part))
+                        (end-time (match-string 2 part)))
+                    (let ((start (bs--parse-time start-time))
+                          (end (bs--parse-time end-time)))
+                      (- end start)))
                 ;; Simple number
                 (string-to-number part)))
             parts))))
