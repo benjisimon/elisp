@@ -162,13 +162,17 @@ This works on the current region."
 
 (defun bs-copy-current-file-location ()
   "Copy current file path and line number to kill ring."
-    (interactive)
-    (let ((location (format "%s:%d"
-                            (or (buffer-file-name)
-                                (format "emacs-buffer:%s" (buffer-name)))
-                            (line-number-at-pos))))
-      (kill-new location)
-      (message "Copied: %s" location)))
+  (interactive)
+  (let ((location
+         (if (eq major-mode 'dired-mode)
+      (or (dired-get-filename nil t)
+          default-directory)
+      (format "%s:%d"
+              (or (buffer-file-name)
+                  (format "emacs-buffer:%s" (buffer-name)))
+              (line-number-at-pos)))))
+    (kill-new location)
+    (message "Copied: %s" location)))
 
 (defun mysql-insert-table-defn (table-name)
   "Insert a table definition at point for a MySQL table."
