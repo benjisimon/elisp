@@ -160,6 +160,15 @@ This works on the current region."
       (insert (format "[%s:%d]\n"  path line-number))
       (kill-region (point-min) (point-max)))))
 
+(defun bs-copy-current-file-location ()
+  "Copy current file path and line number to kill ring."
+    (interactive)
+    (let ((location (format "%s:%d"
+                            (or (buffer-file-name)
+                                (format "emacs-buffer:%s" (buffer-name)))
+                            (line-number-at-pos))))
+      (kill-new location)
+      (message "Copied: %s" location)))
 
 (defun mysql-insert-table-defn (table-name)
   "Insert a table definition at point for a MySQL table."
