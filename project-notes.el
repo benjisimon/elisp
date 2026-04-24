@@ -39,6 +39,9 @@
     (cond ((string-match ".*dt/i2x/project-notes/.*" buffer-file-name)
            (project-notes-mode)))))
 
+(defvar project-notes-after-export-hook nil
+  "Hook run after exporting a project note to HTML. Called with the output file path.")
+
 (defun project-notes-export-to-html ()
   "Export the current project notes file to an HTML file"
   (interactive)
@@ -51,7 +54,8 @@
          (org-html-validation-link nil))
     (unless (file-exists-p (file-name-directory export-file))
       (make-directory (file-name-directory export-file) t))
-    (org-export-to-file 'html export-file)))
+    (org-export-to-file 'html export-file)
+    (run-hook-with-args 'project-notes-after-export-hook export-file)))
 
 
 (add-hook 'markdown-mode-hook 'project-notes-maybe-enable-mode)
