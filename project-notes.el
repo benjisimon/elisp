@@ -2,7 +2,7 @@
 ;; Work with project notes
 ;;
 
-(defvar project-notes-bookmark-name "project-notes-anchor")
+(defvar project-notes-register "P")
 
 (defun project-notes-find-file-today ()
   "Quickly open up a notes file or create one for today."
@@ -19,13 +19,13 @@
                (t (format "%s/internal/misc" base)))))
     (unless (file-accessible-directory-p dir)
       (mkdir dir t))
-    (bookmark-set project-notes-bookmark-name nil)
+    (point-to-register project-notes-register)
     (find-file (format "%s/%s.org" dir timestamp))))
 
 (defun project-notes-jump-back ()
   "Go back to where we launched project notes"
   (interactive)
-  (bookmark-jump project-notes-bookmark-name))
+  (jump-to-register project-notes-register))
 
 (define-minor-mode project-notes-mode
   "Project notes helper stuff"
