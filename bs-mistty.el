@@ -23,4 +23,34 @@ home, so a given N is always the same shell."
           (kill-buffer buf)))
       (mistty-create))))
 
+(defcustom bs-mistty-osc-commands '(find-file)
+  "Commands a shell running under MisTTY is allowed to invoke."
+  :type '(repeat function)
+  :group 'mistty)
+
+(defun bs-mistty-osc-call (form window)
+  "Apply the car of FORM to the rest of FORM, with WINDOW selected.
+
+WINDOW may be nil or dead, in which case the selected window is used."
+  (if (window-live-p window)
+      (with-selected-window window (apply (car form) (cdr form)))
+    (apply (car form) (cdr form))))
+
+(defun bs-mistty-osc (_code text)
+  "Run the command TEXT names in the window holding the shell that sent it.
+
+TEXT is an elisp form, optionally prefixed with \"E\", whose car must be a
+member of `bs-mistty-osc-commands'.  The rest of the form is passed as
+arguments without being evaluated."
+  (let ((form (ignore-errors
+                (car (read-from-string
+                      (if (string-prefix-p "E" text) (substring text 1) text)))))
+        (window (and (buffer-live-p mistty-work-buffer)
+                     (get-buffer-window mistty-work-buffer t))))
+    (if (memq (car-safe form) bs-mistty-osc-commands)
+        (run-at-time 0 nil #'bs-mistty-osc-call form window)
+      (message "MisTTY: refusing to run %s" text))))
+
+(add-to-list 'mistty-osc-handlers '("51" . bs-mistty-osc))
+
 (provide 'bs-mistty)
