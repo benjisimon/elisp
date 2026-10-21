@@ -31,7 +31,8 @@ exchange."
 
 (define-derived-mode bs-claude-exchange-mode gfm-view-mode "Claude-Exchange"
   "Read-only view of one Claude Code exchange.
-\\{bs-claude-exchange-mode-map}")
+\\{bs-claude-exchange-mode-map}"
+  (visual-line-mode 1))
 
 (defun bs-claude-exchange--directory ()
   "Return the project directory a Claude Code session here would run in."
