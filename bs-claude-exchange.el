@@ -52,12 +52,22 @@ Signal a `user-error' carrying the command's message when it fails."
         (user-error "%s" (string-trim (buffer-string))))
       (buffer-string))))
 
+(defun bs-claude-exchange--align-tables ()
+  "Pad every markdown table in the buffer so its columns line up."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^|" nil t)
+      (when (markdown-table-at-point-p)
+        (markdown-table-align)
+        (goto-char (markdown-table-end))))))
+
 (defun bs-claude-exchange--show (index)
   "Replace this buffer's contents with exchange INDEX."
   (let ((text (bs-claude-exchange--fetch bs-claude-exchange-directory index))
         (inhibit-read-only t))
     (erase-buffer)
     (insert text)
+    (bs-claude-exchange--align-tables)
     (goto-char (point-min))
     (setq bs-claude-exchange-index index)
     (setq header-line-format
