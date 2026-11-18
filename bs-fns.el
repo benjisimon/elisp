@@ -367,4 +367,26 @@ This works on the current region."
       (insert svg)
       (image-mode))))
 
+(defvar bs-priority-markers "^=v"
+  "Line-leading priority markers, most important first.")
+
+(defun bs-priority-marker-rank ()
+  "Return the rank of the priority marker starting the line at point.
+The rank is the marker's index in `bs-priority-markers'.  A line
+without a marker ranks after every marker."
+  (let ((c (char-after)))
+    (or (and c (string-search (string c) bs-priority-markers))
+        (length bs-priority-markers))))
+
+(defun bs-sort-region-by-priority (beg end)
+  "Sort the lines between BEG and END by their priority marker.
+Markers and their order come from `bs-priority-markers'.  Lines
+sharing a marker keep their relative order; unmarked lines sort last."
+  (interactive "r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char (point-min))
+      (sort-subr nil #'forward-line #'end-of-line #'bs-priority-marker-rank))))
+
 (provide 'bs-fns)
